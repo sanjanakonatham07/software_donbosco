@@ -21,6 +21,9 @@ export default defineConfig({
         // Cache name prefix
         cacheId: 'donbosco-erp-v1',
         
+        // Import Firebase Messaging SW background handler
+        importScripts: ['/firebase-messaging-sw.js'],
+        
         // Runtime caching rules
         runtimeCaching: [
           {

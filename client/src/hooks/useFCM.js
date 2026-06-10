@@ -33,6 +33,15 @@ const useFCM = (user, token, apiRequest, showToast) => {
   const initialized = useRef(false);
 
   useEffect(() => {
+    console.log('[FCM Debug] Hook triggered:', {
+      hasUser: !!user,
+      role: user?.role,
+      initialized: initialized.current,
+      VAPID_KEY: VAPID_KEY,
+      isSecureContext: window.isSecureContext,
+      hasNotification: 'Notification' in window
+    });
+
     // Only run for logged-in students
     if (!user || user.role !== 'student' || initialized.current) return;
 
@@ -63,17 +72,14 @@ const useFCM = (user, token, apiRequest, showToast) => {
         const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
         const messaging = getMessaging(app);
 
-        // Step 3: Register the background service worker
+        // Step 3: Get active PWA service worker registration
         let swRegistration;
         if ('serviceWorker' in navigator) {
           try {
-            swRegistration = await navigator.serviceWorker.register(
-              '/firebase-messaging-sw.js',
-              { scope: '/' }
-            );
-            console.log('[FCM] Firebase SW registered:', swRegistration.scope);
+            swRegistration = await navigator.serviceWorker.ready;
+            console.log('[FCM] Active PWA SW registration obtained:', swRegistration.active?.scriptURL);
           } catch (swErr) {
-            console.error('[FCM] Service worker registration failed:', swErr);
+            console.error('[FCM] Failed to get active service worker registration:', swErr);
           }
         }
 

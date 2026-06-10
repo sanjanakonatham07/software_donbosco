@@ -910,8 +910,20 @@ router.post('/students/:id/notes', async (req, res) => {
     await Notification.create({
       user: student.user,
       title: 'Important Note from Teacher',
-      message: `Your class teacher ${teacher.user.name} has posted an important note: "${content.trim()}"`
+      message: `Your class teacher ${teacher.user.name} has posted an important note: "${content.trim()}"`,
+      type: 'note',
+      link: '/student/dashboard'
     });
+
+    // Send FCM push notification to student's devices
+    if (student.fcmTokens && student.fcmTokens.length > 0) {
+      sendFCMNotification(
+        student.fcmTokens,
+        '📝 Note from Teacher',
+        `Your class teacher ${teacher.user.name} posted a note: "${content.trim()}"`,
+        { type: 'note', link: '/student/dashboard' }
+      ).catch(err => console.error('[FCM] Note push error:', err.message));
+    }
 
     await logTeacherAction(
       teacher.user,
