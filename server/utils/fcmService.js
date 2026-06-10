@@ -3,20 +3,35 @@ const { getMessaging } = require('firebase-admin/messaging');
 
 // Initialize Firebase Admin SDK once (singleton pattern)
 if (getApps().length === 0) {
-  try {
-    initializeApp({
-      credential: cert({
-        project_id: process.env.FIREBASE_PROJECT_ID,
-        client_email: process.env.FIREBASE_CLIENT_EMAIL,
-        // Replace escaped newlines in private key (common env variable issue)
-        private_key: process.env.FIREBASE_PRIVATE_KEY
-          ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
-          : undefined,
-      }),
-    });
-    console.log('[FCM] Firebase Admin SDK initialized successfully');
-  } catch (err) {
-    console.error('[FCM] Firebase Admin SDK initialization failed:', err.message);
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  let privateKey = process.env.FIREBASE_PRIVATE_KEY;
+
+  if (!projectId || !clientEmail || !privateKey) {
+    console.warn('[FCM] Firebase Admin credentials are missing from environment variables. Push notifications are disabled.');
+  } else {
+    try {
+      // Sanitize private key: trim whitespace, strip surrounding quotes, and replace escaped newlines
+      privateKey = privateKey.trim();
+      if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+        privateKey = privateKey.slice(1, -1);
+      }
+      if (privateKey.startsWith("'") && privateKey.endsWith("'")) {
+        privateKey = privateKey.slice(1, -1);
+      }
+      privateKey = privateKey.replace(/\\n/g, '\n');
+
+      initializeApp({
+        credential: cert({
+          project_id: projectId,
+          client_email: clientEmail,
+          private_key: privateKey,
+        }),
+      });
+      console.log('[FCM] Firebase Admin SDK initialized successfully');
+    } catch (err) {
+      console.error('[FCM] Firebase Admin SDK initialization failed:', err.message);
+    }
   }
 }
 
