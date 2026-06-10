@@ -144,7 +144,7 @@ const NoticeBoard = () => {
           <p style={{ fontSize: '0.875rem', marginTop: '0.25rem' }}>Publish a new holiday, examination, event, or general announcement to display here.</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '1.5rem' }}>
           {notices.map((notice) => (
             <div key={notice._id} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '220px', backgroundColor: '#ffffff' }}>
               <div>

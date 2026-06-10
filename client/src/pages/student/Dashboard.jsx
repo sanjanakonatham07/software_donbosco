@@ -232,7 +232,7 @@ const StudentDashboard = () => {
       )}
 
       {/* Grid of details: Today's Work & Notices Board */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
         
         {/* TODAY'S WORK MODULE */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', backgroundColor: '#ffffff' }}>
@@ -346,7 +346,7 @@ const StudentDashboard = () => {
           </h3>
           
           {/* Tab Selector */}
-          <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto' }}>
+          <div className="no-scrollbar" style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', flexWrap: 'nowrap' }}>
             {[
               { id: 'info', label: 'Personal Info' },
               { id: 'attendance', label: 'Attendance Summary' },

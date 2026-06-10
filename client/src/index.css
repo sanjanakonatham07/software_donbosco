@@ -555,3 +555,76 @@ input:checked + .slider:before {
     opacity: 0;
   }
 }
+
+/* ========================================================
+   GLOBAL MOBILE RESPONSIVE MEDIA QUERIES
+   ======================================================== */
+
+@media (max-width: 768px) {
+  :root {
+    --header-height: 72px;
+  }
+
+  /* Typography Scale Down */
+  h2 {
+    font-size: 1.25rem !important;
+  }
+  h3 {
+    font-size: 1.05rem !important;
+  }
+
+  /* Responsive Forms */
+  .form-row {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Modals Layout Overrides */
+  .modal-content {
+    width: 95% !important;
+    max-height: 85vh !important;
+    margin: 1rem !important;
+  }
+  .modal-footer {
+    padding: 0.75rem 1.25rem !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+  .modal-footer .btn {
+    flex: 1 1 auto !important;
+    min-width: 100px !important;
+  }
+
+  /* Mobile Content Padding */
+  .main-content {
+    padding: 0.75rem !important;
+    padding-top: calc(var(--header-height) + 0.75rem) !important;
+  }
+}
+
+/* Hide scrollbars but preserve functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;  /* IE/Edge */
+  scrollbar-width: none !important;  /* Firefox */
+}
+
+/* Table Container Scrolling */
+.table-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.table th, .table td {
+  white-space: nowrap; /* Prevent ugly wrapping inside scrollable tables */
+}
+
+/* Ensure flex parents can shrink */
+.app-container, .main-content, .card {
+  min-width: 0 !important;
+}
+

@@ -82,7 +82,7 @@ const AttendanceDashboard = () => {
 
       {/* Filters Card */}
       <div 
-        className="card" 
+        className="card attendance-filters" 
         style={{ 
           padding: '1.25rem 1.5rem', 
           marginBottom: '2rem', 
@@ -99,7 +99,7 @@ const AttendanceDashboard = () => {
         </div>
 
         {/* Date Filter */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div className="filter-item" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Calendar size={16} style={{ color: 'var(--primary)' }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span style={{ fontSize: '0.8rem', fontWeight: 500 }}>Date:</span>
@@ -114,7 +114,7 @@ const AttendanceDashboard = () => {
         </div>
 
         {/* Class Filter */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div className="filter-item" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Users size={16} style={{ color: 'var(--primary)' }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span style={{ fontSize: '0.8rem', fontWeight: 500 }}>Class Section:</span>
@@ -186,6 +186,29 @@ const AttendanceDashboard = () => {
           </table>
         </div>
       )}
+      {/* Local Responsive styles for Attendance Overview */}
+      <style>{`
+        @media (max-width: 768px) {
+          .attendance-filters {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 1rem !important;
+            padding: 1rem !important;
+          }
+          .filter-item {
+            width: 100% !important;
+            justify-content: space-between !important;
+          }
+          .filter-item div {
+            flex-grow: 1 !important;
+            justify-content: flex-end !important;
+          }
+          .filter-item select, .filter-item input {
+            width: 100% !important;
+            max-width: 180px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };

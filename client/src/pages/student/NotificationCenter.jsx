@@ -46,6 +46,7 @@ const NotificationCard = ({ notification, onMarkRead, onDelete }) => {
 
   return (
     <div
+      className="notif-card"
       style={{
         display: 'flex',
         gap: '1rem',
@@ -60,6 +61,7 @@ const NotificationCard = ({ notification, onMarkRead, onDelete }) => {
     >
       {/* Icon */}
       <div
+        className="notif-icon-wrapper"
         style={{
           width: '40px',
           height: '40px',
@@ -75,7 +77,7 @@ const NotificationCard = ({ notification, onMarkRead, onDelete }) => {
       </div>
 
       {/* Content */}
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div className="notif-content" style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem', flexWrap: 'wrap' }}>
           <span
             style={{
@@ -141,7 +143,7 @@ const NotificationCard = ({ notification, onMarkRead, onDelete }) => {
       </div>
 
       {/* Actions */}
-      <div style={{ display: 'flex', gap: '0.35rem', flexShrink: 0 }}>
+      <div className="notif-actions" style={{ display: 'flex', gap: '0.35rem', flexShrink: 0 }}>
         {!notification.isRead && (
           <button
             onClick={() => onMarkRead(notification._id)}
@@ -371,6 +373,7 @@ const NotificationCenter = () => {
 
       {/* FILTER TABS */}
       <div
+        className="no-scrollbar"
         style={{
           display: 'flex',
           gap: '0.35rem',
@@ -457,6 +460,32 @@ const NotificationCenter = () => {
           Showing {filtered.length} of {total} notifications
         </p>
       )}
+      {/* Local Responsive styles for Notification Center */}
+      <style>{`
+        @media (max-width: 576px) {
+          .notif-card {
+            padding: 0.75rem 1rem !important;
+            gap: 0.75rem !important;
+          }
+          .notif-icon-wrapper {
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 8px !important;
+          }
+          .notif-icon-wrapper svg {
+            width: 14px !important;
+            height: 14px !important;
+          }
+          .notif-actions {
+            flex-direction: column !important;
+            align-self: center !important;
+            gap: 0.4rem !important;
+          }
+          .notif-actions button {
+            padding: 0.25rem 0.35rem !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };

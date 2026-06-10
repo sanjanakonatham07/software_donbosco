@@ -485,7 +485,7 @@ const ClassManagement = () => {
         // 1. MAIN CLASSES TABLE LIST
         // ========================================================
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <h2 style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>Class & Student ERP Overview</h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
@@ -587,7 +587,7 @@ const ClassManagement = () => {
         // ========================================================
         <div>
           {/* Detail View Header */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
             <button className="btn btn-secondary btn-sm" onClick={handleBackToList} style={{ padding: '0.4rem' }}>
               <ArrowLeft size={16} />
             </button>
@@ -602,11 +602,14 @@ const ClassManagement = () => {
 
           {/* Details tab selector */}
           <div 
+            className="no-scrollbar"
             style={{
               display: 'flex',
               borderBottom: '1px solid var(--border-color)',
               marginBottom: '1.5rem',
-              gap: '1rem'
+              gap: '1rem',
+              overflowX: 'auto',
+              flexWrap: 'nowrap'
             }}
           >
             {[

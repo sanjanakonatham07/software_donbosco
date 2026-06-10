@@ -874,12 +874,14 @@ const TeacherDashboard = () => {
 
       {/* Tab Navigation selector */}
       <div 
+        className="no-scrollbar"
         style={{
           display: 'flex',
           borderBottom: '1px solid var(--border-color)',
           marginBottom: '1.5rem',
           gap: '1rem',
-          flexWrap: 'wrap'
+          overflowX: 'auto',
+          flexWrap: 'nowrap'
         }}
       >
         {[
@@ -908,7 +910,8 @@ const TeacherDashboard = () => {
                 borderBottom: isActive ? '3px solid var(--primary)' : '3px solid transparent',
                 backgroundColor: 'transparent',
                 cursor: 'pointer',
-                transition: 'var(--transition)'
+                transition: 'var(--transition)',
+                whiteSpace: 'nowrap'
               }}
             >
               <Icon size={16} />
@@ -1929,7 +1932,7 @@ const TeacherDashboard = () => {
         title={selectedStudent ? `${selectedStudent.user ? selectedStudent.user.name : ''} - Profile Cockpit` : 'Student Profile'}
       >
         {selectedStudent && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: '400px', maxWidth: '600px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '600px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-color)' }}>
               <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
                 {selectedStudent.user ? selectedStudent.user.name.charAt(0) : 'S'}

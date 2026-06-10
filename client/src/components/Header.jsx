@@ -89,6 +89,7 @@ const Header = ({ toggleSidebar }) => {
         <img 
           src={schoolLogo} 
           alt="Don Bosco Logo" 
+          className="header-logo"
           style={{ 
             width: '64px', 
             height: '64px', 
@@ -102,6 +103,7 @@ const Header = ({ toggleSidebar }) => {
         {/* Text Stack */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.05rem', textAlign: 'left' }}>
           <h1 
+            className="header-title"
             style={{ 
               fontSize: '1.25rem', 
               fontWeight: 800, 
@@ -115,6 +117,7 @@ const Header = ({ toggleSidebar }) => {
             DON BOSCO PUBLIC SCHOOL
           </h1>
           <span 
+            className="header-subtitle"
             style={{ 
               color: 'var(--accent)', 
               fontSize: '0.725rem', 
@@ -127,6 +130,7 @@ const Header = ({ toggleSidebar }) => {
             AFFILIATED TO CBSE, NEW DELHI
           </span>
           <span 
+            className="header-address"
             style={{ 
               color: 'var(--text-muted)', 
               fontSize: '0.68rem', 
@@ -211,6 +215,7 @@ const Header = ({ toggleSidebar }) => {
 
             {showDropdown && (
               <div 
+                className="notification-dropdown"
                 style={{
                   position: 'absolute',
                   top: '100%',
@@ -309,7 +314,7 @@ const Header = ({ toggleSidebar }) => {
             {user.name.charAt(0)}
           </div>
           
-          <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column' }}>
+          <div className="header-user-info" style={{ textAlign: 'left', display: 'flex', flexDirection: 'column' }}>
             <span style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--secondary)', lineHeight: 1.2 }}>{user.name}</span>
             <span 
               className={`badge ${
@@ -338,6 +343,28 @@ const Header = ({ toggleSidebar }) => {
           }
           .academic-year-badge {
             display: none !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .header-address {
+            display: none !important;
+          }
+          .header-user-info {
+            display: none !important;
+          }
+          .header-title {
+            font-size: 0.95rem !important;
+          }
+          .header-subtitle {
+            font-size: 0.6rem !important;
+          }
+          .header-logo {
+            width: 42px !important;
+            height: 42px !important;
+          }
+          .notification-dropdown {
+            width: 280px !important;
+            right: -40px !important;
           }
         }
       `}</style>
