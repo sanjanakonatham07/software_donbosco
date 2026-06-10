@@ -8,7 +8,7 @@ import { Plus, Edit2, Trash2, Key, Search } from 'lucide-react';
 const StudentManagement = () => {
   const { apiRequest } = useAuth();
   const { showSuccess, showError } = useToast();
-  const confirm = useConfirm();
+  const { confirm } = useConfirm();
   
   // Data States
   const [students, setStudents] = useState([]);

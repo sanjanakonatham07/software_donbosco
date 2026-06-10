@@ -8,7 +8,7 @@ import { Plus, Trash2, Calendar, FileText } from 'lucide-react';
 const NoticeBoard = () => {
   const { apiRequest } = useAuth();
   const { showSuccess, showError } = useToast();
-  const confirm = useConfirm();
+  const { confirm } = useConfirm();
   
   // Data States
   const [notices, setNotices] = useState([]);

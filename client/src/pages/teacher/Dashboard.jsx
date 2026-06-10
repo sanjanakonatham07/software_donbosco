@@ -35,7 +35,7 @@ const calculateGrade = (percentage) => {
 const TeacherDashboard = () => {
   const { apiRequest, user } = useAuth();
   const { showSuccess, showError, showWarning } = useToast();
-  const confirm = useConfirm();
+  const { confirm } = useConfirm();
   
   // Data States
   const [classInfo, setClassInfo] = useState(null);

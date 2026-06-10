@@ -21,7 +21,7 @@ import {
 const ClassManagement = () => {
   const { apiRequest } = useAuth();
   const { showSuccess, showError, showWarning } = useToast();
-  const confirm = useConfirm();
+  const { confirm } = useConfirm();
   
   // Data States
   const [classes, setClasses] = useState([]);

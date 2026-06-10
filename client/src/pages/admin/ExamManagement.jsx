@@ -19,7 +19,7 @@ import {
 const ExamManagement = () => {
   const { apiRequest } = useAuth();
   const { showSuccess, showError } = useToast();
-  const confirm = useConfirm();
+  const { confirm } = useConfirm();
   
   // Data States
   const [exams, setExams] = useState([]);
