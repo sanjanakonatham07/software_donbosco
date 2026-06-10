@@ -14,6 +14,7 @@ const ExamResult = require('../models/ExamResult');
 const StudentNote = require('../models/StudentNote');
 const Exam = require('../models/Exam');
 const { protect, authorize } = require('../middleware/auth');
+const { sendFCMNotification } = require('../utils/fcmService');
 
 // Apply protection & teacher check
 router.use(protect);
@@ -354,11 +355,24 @@ router.post('/attendance', async (req, res) => {
       );
 
       if (record.status === 'Absent' && notificationsOn) {
+        // 1. Save in-app notification
         await Notification.create({
           user: student.user,
           title: 'Attendance Alert',
-          message: 'You were marked absent today. If there is any discrepancy, please contact your class teacher or school administration.'
+          message: 'You were marked absent today. If there is any discrepancy, please contact your class teacher or school administration.',
+          type: 'attendance',
+          link: '/student/dashboard?tab=attendance'
         });
+
+        // 2. Send FCM push notification to student's devices
+        if (student.fcmTokens && student.fcmTokens.length > 0) {
+          sendFCMNotification(
+            student.fcmTokens,
+            '🔴 Attendance Alert',
+            'You were marked absent today. Contact your class teacher if this is incorrect.',
+            { type: 'attendance', link: '/student/dashboard?tab=attendance' }
+          ).catch(err => console.error('[FCM] Attendance push error:', err.message));
+        }
       }
     });
 
@@ -448,17 +462,37 @@ router.post('/daily-work', async (req, res) => {
       { upsert: true, new: true }
     );
 
-    // Notify students
+    // Notify students — in-app + FCM push
     const students = await Student.find({ class: assignedClass._id });
+    const allFCMTokens = [];
+
     const notifyPromises = students.map(async (stud) => {
+      // In-app notification
       await Notification.create({
         user: stud.user,
         title: 'New Daily Work Posted',
-        message: "Your class teacher has posted today's class work. Please review the work details."
+        message: `Your class teacher has posted today's class work for ${date}. Please review the homework details.`,
+        type: 'homework',
+        link: '/student/dashboard'
       });
+
+      // Collect FCM tokens
+      if (stud.fcmTokens && stud.fcmTokens.length > 0) {
+        allFCMTokens.push(...stud.fcmTokens);
+      }
     });
 
     await Promise.all(notifyPromises);
+
+    // Send single FCM multicast to all class student devices
+    if (allFCMTokens.length > 0) {
+      sendFCMNotification(
+        allFCMTokens,
+        '📚 New Homework Posted',
+        `Your class teacher has posted today's homework. Tap to review.`,
+        { type: 'homework', link: '/student/dashboard' }
+      ).catch(err => console.error('[FCM] Daily work push error:', err.message));
+    }
 
     // Format log: e.g. "Suresh Kumar posted Daily Work for Class 7-B"
     await logTeacherAction(
@@ -737,18 +771,38 @@ router.post('/class-exams/:examId/publish', async (req, res) => {
       { status: 'Published', publishedAt: new Date() }
     );
     
+    const resultFCMTokens = [];
+
     const notifyPromises = students.map(async (stud) => {
       const resultExists = await ExamResult.findOne({ student: stud._id, exam: examId });
       if (resultExists) {
+        // In-app notification
         await Notification.create({
           user: stud.user,
-          title: 'Result Published',
-          message: `Your ${exam.name} results have been published. Please login to view your marks.`
+          title: '🏆 Result Published',
+          message: `Your ${exam.name} results have been published. Please login to view your marks.`,
+          type: 'result',
+          link: '/student/dashboard?tab=marks'
         });
+
+        // Collect FCM tokens
+        if (stud.fcmTokens && stud.fcmTokens.length > 0) {
+          resultFCMTokens.push(...stud.fcmTokens);
+        }
       }
     });
 
     await Promise.all(notifyPromises);
+
+    // FCM push to all students whose results were published
+    if (resultFCMTokens.length > 0) {
+      sendFCMNotification(
+        resultFCMTokens,
+        '🏆 Exam Results Published',
+        `Your ${exam.name} results are now available. Tap to view your marks.`,
+        { type: 'result', link: '/student/dashboard?tab=marks' }
+      ).catch(err => console.error('[FCM] Result push error:', err.message));
+    }
 
     await logTeacherAction(
       teacher.user,

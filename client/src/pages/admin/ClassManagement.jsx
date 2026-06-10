@@ -136,6 +136,27 @@ const ClassManagement = () => {
     }
   }, [activeTab, dailyWorkDate, currentClass?._id]);
 
+  useEffect(() => {
+    if (currentClass) {
+      setSelectedClass(currentClass);
+      setClassForm({
+        className: currentClass.className || '',
+        section: currentClass.section || '',
+        classTeacher: currentClass.classTeacher 
+          ? (currentClass.classTeacher._id || currentClass.classTeacher) 
+          : ''
+      });
+    } else {
+      setSelectedClass(null);
+      setClassForm({
+        className: '',
+        section: '',
+        classTeacher: ''
+      });
+    }
+  }, [currentClass]);
+
+
   const handleViewDetails = (classItem) => {
     setCurrentClass(classItem);
     setActiveTab('students');

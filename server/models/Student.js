@@ -36,6 +36,11 @@ const studentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Class', 
     required: true 
+  },
+  // FCM device tokens for push notifications — array to support multiple devices (phone + laptop etc.)
+  fcmTokens: {
+    type: [String],
+    default: []
   }
 });
 

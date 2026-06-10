@@ -255,12 +255,13 @@ router.put('/classes/:id', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Class not found' });
     }
 
-    // Check unique constraint if name/section is changing
-    if (className !== classItem.className || section !== classItem.section) {
-      const classExists = await Class.findOne({ className, section });
-      if (classExists) {
-        return res.status(400).json({ success: false, message: `Class ${className}-${section} already exists` });
-      }
+    // Check unique constraint excluding current class
+    const classExists = await Class.findOne({ 
+      className: String(className).trim(), 
+      section: String(section).trim() 
+    });
+    if (classExists && classExists._id.toString() !== classItem._id.toString()) {
+      return res.status(400).json({ success: false, message: `Class ${className}-${section} already exists` });
     }
 
     classItem.className = className;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -15,9 +15,25 @@ import {
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, apiRequest } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Fetch unread notification count for students
+  useEffect(() => {
+    if (user?.role !== 'student') return;
+    const fetchUnread = async () => {
+      try {
+        const data = await apiRequest('/student/notifications?limit=1');
+        if (data.success) setUnreadCount(data.unreadCount || 0);
+      } catch {}
+    };
+    fetchUnread();
+    // Refresh every 60 seconds
+    const interval = setInterval(fetchUnread, 60000);
+    return () => clearInterval(interval);
+  }, [user?.role]);
 
   if (!user) return null;
 
@@ -42,6 +58,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   const studentNav = [
     { name: 'Dashboard', path: '/student/dashboard', icon: LayoutDashboard },
+    { name: 'Notifications', path: '/student/notifications', icon: Bell, badge: unreadCount },
     { name: 'My Marks', path: '/student/dashboard?tab=marks', icon: Award },
   ];
 
@@ -105,7 +122,26 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 }}
               >
                 <Icon size={18} />
-                <span>{item.name}</span>
+                <span style={{ flex: 1 }}>{item.name}</span>
+                {item.badge > 0 && (
+                  <span
+                    style={{
+                      minWidth: '18px',
+                      height: '18px',
+                      padding: '0 4px',
+                      borderRadius: '9px',
+                      backgroundColor: '#ef4444',
+                      color: '#ffffff',
+                      fontSize: '0.65rem',
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {item.badge > 99 ? '99+' : item.badge}
+                  </span>
+                )}
               </NavLink>
             );
           })}

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { ToastProvider } from './context/ToastContext';
+import { ToastProvider, useToast } from './context/ToastContext';
 import { ConfirmProvider } from './context/ConfirmContext';
 
 // Import Components
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
+import PWAInstallBanner from './components/PWAInstallBanner';
+import useFCM from './hooks/useFCM';
 
 // Import Pages
 import Login from './pages/Login';
@@ -25,6 +27,7 @@ import TeacherDashboard from './pages/teacher/Dashboard';
 
 // Student Pages
 import StudentDashboard from './pages/student/Dashboard';
+import NotificationCenter from './pages/student/NotificationCenter';
 
 // Route Guard: Enforce Auth and Force Password Change Redirect
 const RouteGuard = ({ children, allowedRoles }) => {
@@ -88,6 +91,7 @@ const DashboardLayout = () => {
 
           {/* Student Routes */}
           <Route path="/student/dashboard" element={<RouteGuard allowedRoles={['student']}><StudentDashboard /></RouteGuard>} />
+          <Route path="/student/notifications" element={<RouteGuard allowedRoles={['student']}><NotificationCenter /></RouteGuard>} />
 
           {/* Profile password change inside dashboard */}
           <Route path="/change-password" element={
@@ -106,7 +110,11 @@ const DashboardLayout = () => {
 
 // Root App Switcher
 const AppContent = () => {
-  const { user, isAuthenticated, loading } = useAuth();
+  const { user, isAuthenticated, loading, token, apiRequest } = useAuth();
+  const { showSuccess } = useToast();
+
+  // Initialize FCM for students — requests permission and registers device token
+  useFCM(user, token, apiRequest, showSuccess);
 
   if (loading) {
     return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading School ERP...</div>;
@@ -187,6 +195,7 @@ const App = () => {
         <ConfirmProvider>
           <Router>
             <AppContent />
+            <PWAInstallBanner />
           </Router>
         </ConfirmProvider>
       </ToastProvider>

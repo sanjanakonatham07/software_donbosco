@@ -17,6 +17,17 @@ const notificationSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  // Type of notification — controls icon shown in Notification Center
+  type: {
+    type: String,
+    enum: ['attendance', 'homework', 'notice', 'result', 'note', 'general'],
+    default: 'general'
+  },
+  // Optional deep-link URL to navigate to when notification is clicked
+  link: {
+    type: String,
+    default: null
+  },
   isRead: { 
     type: Boolean, 
     default: false,
@@ -27,5 +38,8 @@ const notificationSchema = new mongoose.Schema({
     default: Date.now 
   }
 });
+
+// Index for fast per-user queries sorted by date
+notificationSchema.index({ user: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Notification', notificationSchema);

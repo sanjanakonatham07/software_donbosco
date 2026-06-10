@@ -214,4 +214,94 @@ router.get('/profile-extra', async (req, res) => {
   }
 });
 
+
+// @desc    Save or update FCM push notification token for logged-in student
+// @route   POST /api/student/fcm-token
+// @access  Private (Student)
+router.post('/fcm-token', async (req, res) => {
+  const { token } = req.body;
+
+  if (!token || typeof token !== 'string' || token.trim().length === 0) {
+    return res.status(400).json({ success: false, message: 'FCM token is required' });
+  }
+
+  try {
+    const student = await Student.findOne({ user: req.user._id });
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student profile not found' });
+    }
+
+    // Add token only if not already stored (deduplicate)
+    if (!student.fcmTokens.includes(token.trim())) {
+      student.fcmTokens.push(token.trim());
+
+      // Keep only the last 5 tokens per student (prevent unbounded growth)
+      if (student.fcmTokens.length > 5) {
+        student.fcmTokens = student.fcmTokens.slice(-5);
+      }
+
+      await student.save();
+    }
+
+    res.json({ success: true, message: 'FCM token registered successfully' });
+  } catch (error) {
+    console.error('[FCM Token] Error saving token:', error);
+    res.status(500).json({ success: false, message: 'Error saving FCM token' });
+  }
+});
+
+// @desc    Get all notifications for logged-in student (Notification Center)
+// @route   GET /api/student/notifications
+// @access  Private (Student)
+router.get('/notifications', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const skip = (page - 1) * limit;
+
+    const [notifications, total, unreadCount] = await Promise.all([
+      Notification.find({ user: req.user._id })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Notification.countDocuments({ user: req.user._id }),
+      Notification.countDocuments({ user: req.user._id, isRead: false }),
+    ]);
+
+    res.json({
+      success: true,
+      notifications,
+      unreadCount,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Error fetching notifications' });
+  }
+});
+
+// @desc    Delete a single notification
+// @route   DELETE /api/student/notifications/:id
+// @access  Private (Student)
+router.delete('/notifications/:id', async (req, res) => {
+  try {
+    const notification = await Notification.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!notification) {
+      return res.status(404).json({ success: false, message: 'Notification not found' });
+    }
+
+    res.json({ success: true, message: 'Notification deleted' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 module.exports = router;
+

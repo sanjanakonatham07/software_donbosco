@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Vite PWA dev mode build outputs
+dev-dist
+/dev-dist
+
+# Local env files
+.env
+.env.local
+.env.*.local

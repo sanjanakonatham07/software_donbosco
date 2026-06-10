@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Notice = require('../models/Notice');
+const Student = require('../models/Student');
+const Notification = require('../models/Notification');
 const ActivityLog = require('../models/ActivityLog');
 const { protect, authorize } = require('../middleware/auth');
+const { sendFCMNotification } = require('../utils/fcmService');
 
 // Apply protection to all notice routes
 router.use(protect);
@@ -22,7 +25,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @desc    Create a notice
+// @desc    Create a notice + send push notification to all students
 // @route   POST /api/notices
 // @access  Private (Admin only)
 router.post('/', authorize('admin'), async (req, res) => {
@@ -46,6 +49,38 @@ router.post('/', authorize('admin'), async (req, res) => {
       action: 'Notice Creation',
       details: `Published a new ${type}: "${title}"`
     });
+
+    // --- Notify ALL students (in-app + FCM push) ---
+    const students = await Student.find({}).select('user fcmTokens');
+    const allFCMTokens = [];
+
+    const notifyPromises = students.map(async (stud) => {
+      // In-app notification
+      await Notification.create({
+        user: stud.user,
+        title: `📢 New Notice: ${title}`,
+        message: `${type} has been published by the school administration. Tap to read the full notice.`,
+        type: 'notice',
+        link: '/student/dashboard'
+      });
+
+      // Collect FCM tokens for push
+      if (stud.fcmTokens && stud.fcmTokens.length > 0) {
+        allFCMTokens.push(...stud.fcmTokens);
+      }
+    });
+
+    await Promise.all(notifyPromises);
+
+    // Send single FCM multicast to all student devices
+    if (allFCMTokens.length > 0) {
+      sendFCMNotification(
+        allFCMTokens,
+        `📢 ${type}`,
+        `${title} — Tap to read the full notice.`,
+        { type: 'notice', link: '/student/dashboard' }
+      ).catch(err => console.error('[FCM] Notice push error:', err.message));
+    }
 
     res.status(201).json({ success: true, notice: newNotice });
   } catch (error) {
