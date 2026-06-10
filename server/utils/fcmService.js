@@ -13,13 +13,27 @@ if (getApps().length === 0) {
     try {
       // Sanitize private key: trim whitespace, strip surrounding quotes, and replace escaped newlines
       privateKey = privateKey.trim();
+      
+      console.log('[FCM Debug] Raw Private Key length:', privateKey.length);
+      console.log('[FCM Debug] Raw Private Key starts with:', JSON.stringify(privateKey.substring(0, 35)));
+      console.log('[FCM Debug] Raw Private Key ends with:', JSON.stringify(privateKey.substring(privateKey.length - 35)));
+      
       if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
         privateKey = privateKey.slice(1, -1);
-      }
-      if (privateKey.startsWith("'") && privateKey.endsWith("'")) {
+        console.log('[FCM Debug] Stripped surrounding double quotes');
+      } else if (privateKey.startsWith("'") && privateKey.endsWith("'")) {
         privateKey = privateKey.slice(1, -1);
+        console.log('[FCM Debug] Stripped surrounding single quotes');
       }
+      
+      // Keep track if it has literal \n
+      const hasEscapedNewlines = privateKey.includes('\\n');
+      console.log('[FCM Debug] Has escaped newlines (\\n):', hasEscapedNewlines);
+      
       privateKey = privateKey.replace(/\\n/g, '\n');
+      console.log('[FCM Debug] Sanitized key starts with:', JSON.stringify(privateKey.substring(0, 35)));
+      console.log('[FCM Debug] Sanitized key ends with:', JSON.stringify(privateKey.substring(privateKey.length - 35)));
+      console.log('[FCM Debug] Sanitized key contains actual newlines:', privateKey.includes('\n'));
 
       initializeApp({
         credential: cert({
